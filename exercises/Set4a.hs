@@ -35,7 +35,13 @@ import Data.Array
 -- you remove the Eq a => constraint from the type!
 
 allEqual :: Eq a => [a] -> Bool
-allEqual xs = todo
+allEqual [] = True
+allEqual (x:xs) = allEqual' xs
+    where allEqual' [] = True
+          allEqual' (y:ys)
+            | y == x = allEqual' ys
+            | otherwise = False
+
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement the function distinct which returns True if all
@@ -50,7 +56,8 @@ allEqual xs = todo
 --   distinct [1,2] ==> True
 
 distinct :: Eq a => [a] -> Bool
-distinct = todo
+distinct [] = True
+distinct xs = length xs == (length . nub) xs
 
 ------------------------------------------------------------------------------
 -- Ex 3: implement the function middle that returns the middle value
@@ -62,8 +69,12 @@ distinct = todo
 -- Examples:
 --   middle 'b' 'a' 'c'  ==> 'b'
 --   middle 1 7 3        ==> 3
-
-middle = todo
+middle :: Ord a => a -> a -> a -> a
+middle a b c
+  | a <= b && a >= c || a <= c && a >= b = a
+  | c <= a && c >= b || c <= b && c >= a = c
+  | otherwise = b
+  -- | b <= a && b >= c || b <= c && b >= a
 
 ------------------------------------------------------------------------------
 -- Ex 4: return the range of an input list, that is, the difference
@@ -78,8 +89,14 @@ middle = todo
 --   rangeOf [4,2,1,3]          ==> 3
 --   rangeOf [1.5,1.0,1.1,1.2]  ==> 0.5
 
-rangeOf :: [a] -> a
-rangeOf = todo
+rangeOf :: (Ord a, Num a) => [a] -> a
+rangeOf [] = 0
+rangeOf (x:xs) = rangeOf' x x xs
+    where rangeOf' a b [] = b - a
+          rangeOf' a b (y:ys)
+            | y < a = rangeOf' y b ys
+            | y > b = rangeOf' a y ys
+            | otherwise = rangeOf' a b ys
 
 ------------------------------------------------------------------------------
 -- Ex 5: given a (non-empty) list of (non-empty) lists, return the longest
